@@ -7,6 +7,7 @@ from contextlib import nullcontext
 import torch
 import tiktoken
 from model import GPTConfig, GPT
+import sentencepiece as spm
 
 # -----------------------------------------------------------------------------
 init_from = 'resume' # either 'resume' (from an out_dir) or a gpt2 variant (e.g. 'gpt2-xl')
@@ -52,6 +53,10 @@ model.eval()
 model.to(device)
 if compile:
     model = torch.compile(model) # requires PyTorch 2.0 (optional)
+
+# Load your SentencePiece model
+sp = spm.SentencePieceProcessor()
+sp.load("physics_tokenizer.model")
 
 # look for the meta pickle in case it is available in the dataset folder
 load_meta = False
