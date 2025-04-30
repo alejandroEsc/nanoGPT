@@ -6,12 +6,12 @@ from model import GPTConfig, GPT
 # ----------- Config ------------------
 
 out_dir = 'out-zee-gravity'  # change if needed
-tokenizer_path = 'physics_tokenizer.model'
+tokenizer_path = 'data/zee_gravity/physics_tokenizer.model'
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 start_prompt = "The solution to the equation is given by"  # or "" to sample freely
 num_samples = 3
 max_new_tokens = 256
-temperature = 0.9
+temperature = 0.8
 top_k = 100
 
 # -------------------------------------
@@ -27,9 +27,14 @@ checkpoint = torch.load(ckpt_path, map_location=device)
 # Rebuild the GPT model
 gptconf = GPTConfig(**checkpoint['model_args'])
 model = GPT(gptconf)
-model.load_state_dict(checkpoint['model'])
-model.to(device)
+state_dict = checkpoint['model']
+unwanted_prefix = '_orig_mod.'
+for k,v in list(state_dict.items()):
+    if k.startswith(unwanted_prefix):
+        state_dict[k[len(unwanted_prefix):]] = state_dict.pop(k)
+model.load_state_dict(state_dict)
 model.eval()
+model.to(device)
 
 # Encode the prompt
 if start_prompt.strip():
