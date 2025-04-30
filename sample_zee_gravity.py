@@ -14,6 +14,7 @@ max_new_tokens = 256
 temperature = 0.8
 top_k = 100
 
+exec(open('configurator.py').read())
 # -------------------------------------
 
 # Load SentencePiece tokenizer
